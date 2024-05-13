@@ -1,10 +1,13 @@
 package com.example.notent.adapter
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notent.databinding.NoteLayoutBinding
+import com.example.notent.fragments.HomeFragmentDirections
 import com.example.notent.model.Note
 
 class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
@@ -24,4 +27,25 @@ class NoteAdapter : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
         }
     }
     val differ = AsyncListDiffer(this@NoteAdapter, differCallback)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
+        return NoteViewHolder(
+            NoteLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        )
+    }
+
+    override fun getItemCount(): Int {
+        return differ.currentList.size
+    }
+
+    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
+        val currentNote = differ.currentList[position]
+
+        holder.itemBinding.noteTitle.text = currentNote.noteTitle
+        holder.itemBinding.noteDesc.text = currentNote.noteDesc
+
+        holder.itemView.setOnClickListener {
+            val direction = HomeFragmentDirections.actionHomeFragmentToEditNoteFragment(currentNote)
+            it.findNavController().navigate(direction)
+        }
+    }
 }
